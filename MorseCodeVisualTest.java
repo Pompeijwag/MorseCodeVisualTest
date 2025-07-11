@@ -8,23 +8,25 @@ import java.util.Random;
 
 class MorseCodeVisualTest {
     static int timeunit = 500;
-    static long speed = 1;
+    static Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) throws Exception
     {
         Random rand = new Random();
         boolean hardmode = false;
 
-        String decode = "STEALFTH";
+        String decode = "";
         Dictionary<String, String> dictionary = new Hashtable<>();
-        File file = new File("MorseKey.txt");
-        
         ArrayList<String> easywords = new ArrayList<>();
         ArrayList<String> hardwords = new ArrayList<>();
-
+        File file = new File("MorseKey.txt");
         File easy = new File("EasyWords.txt");
         File hard = new File("HardWords.txt");
+        
+
         Scanner easyscanner = new Scanner(easy);
         Scanner hardscanner = new Scanner(hard);
+        Scanner keyScanner = new Scanner(file);
+
         while(easyscanner.hasNext())
         {
             easywords.add(easyscanner.nextLine());
@@ -33,31 +35,31 @@ class MorseCodeVisualTest {
         {
             hardwords.add(hardscanner.nextLine());
         }
-
-        Scanner keyScanner = new Scanner(file);
         while(keyScanner.hasNext())
         {
             String key = "";
             key = keyScanner.next();
             dictionary.put(key, keyScanner.next());
         }
-        Scanner scanner = new Scanner(System.in);
+
         easyscanner.close();
         hardscanner.close();
         keyScanner.close();
+
         int repetitions = 0;
         int correct = 0;
-        boolean a = true;
+        boolean cont = true;
 
         System.out.println("Hard Mode? (Y/N)");
-        if(scanner.nextLine().equals("Y"))
+        if(scanner.nextLine().toUpperCase().equals("Y"))
         {
             hardmode = true;
         }
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        clear();
 
-        while(a)
+        changeSpeed();
+
+        while(cont)
         {
 
         repetitions++;
@@ -72,8 +74,7 @@ class MorseCodeVisualTest {
     
         System.out.println("Ready?");
         scanner.nextLine();
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        clear();
         delay(5);
         
         String[] splitting = decode.split("");
@@ -91,14 +92,13 @@ class MorseCodeVisualTest {
                     blink(3);
                 }
             }
-            delay(2);
+            delay(3);
         }
         
         System.out.println("What was the word communicated?");
         String answer = scanner.nextLine();
         
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        clear();
         
         answer = answer.toLowerCase();
         if(answer.equals(decode))
@@ -112,13 +112,17 @@ class MorseCodeVisualTest {
         }
 
         System.out.println("Score: " + correct + " for " + repetitions + ".");
-        System.out.println("Try again? (Y/N)");
-        if(scanner.nextLine().equals("N"))
+        System.out.println("Try again? (Y/N), Change speed (C)");
+        String command = scanner.nextLine().toUpperCase();
+        if(command.equals("N"))
         {
-            a = false;
+            cont = false;
         }
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        else if(command.equals("C"))
+        {
+            changeSpeed();
+        }
+        clear();
     }
 
     scanner.close();
@@ -127,7 +131,7 @@ class MorseCodeVisualTest {
     {
         try
         {
-          Thread.sleep(units * timeunit / speed);
+          Thread.sleep(units * timeunit);
         }
         catch (Exception e) 
         {
@@ -137,12 +141,23 @@ class MorseCodeVisualTest {
 
     public static void blink(int units)
     {
-        System.out.print("\033[H\033[2J");
-        System.out.flush();
+        clear();
         System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX \nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX \nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX \nXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
         delay(units);
+        clear();
+        delay(1);
+    }
+    
+    public static void changeSpeed()
+    {
+        clear();
+        System.err.println("Set speed: (Default = 500ms)");
+        timeunit = Integer.parseInt(scanner.nextLine());
+    }
+
+    public static void clear()
+    {
         System.out.print("\033[H\033[2J");
         System.out.flush();
-        delay(1);
     }
 }
